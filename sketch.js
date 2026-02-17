@@ -1,20 +1,31 @@
 let img;
+let x, y;
+let vx = 0;
+let vy = 0;
+let sensitivity = 0.7;
+let scrollY;
+
+let storyText =
+"tilt or rotate your phone/move your mouse\n\n" +
+"the computer as a capitalist machine: invented for fast math, abstraction and control.\n" +
+"the computer as a machine for abstraction: bodies, time, work and matter are reduced to numbers.\n" +
+"Who loses when human experience becomes abstract? Usually minorities, handwork and bodies.\n" +
+"Computers and programming were invented from capitalist logic and values. \n\n" +
+"How can we re-use and reshape these systems to make place for slow craft, care, body and community?";
 
 function preload() {
   img = loadImage("ada.png");
 }
-let x, y;
-let vx = 0;
-let vy = 0;
-let sensitivity = 0.4;
-
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
+
   x = width / 2;
   y = height / 2;
 
-  // iOS requires permission
+  scrollY = height; // ← moved here (important!)
+
+  // iOS permission
   if (typeof DeviceOrientationEvent !== "undefined" &&
       typeof DeviceOrientationEvent.requestPermission === "function") {
     createButton("Enable Motion Control")
@@ -32,71 +43,81 @@ function requestAccess() {
 function draw() {
   drawBackground();
 
-  // rotationX = front/back tilt
-  // rotationY = left/right tilt
+  let ax, ay;
 
-let ax, ay;
+  if (rotationX !== 0 || rotationY !== 0) {
+    ax = constrain(rotationY, -35, 35) * sensitivity;
+    ay = constrain(rotationX, -35, 35) * sensitivity;
+  } else {
+    ax = map(mouseX, 0, width, -6, 6) * sensitivity;
+    ay = map(mouseY, 0, height, -6, 6) * sensitivity;
+  }
 
-// If device has sensors → use tilt
-if (rotationX !== 0 || rotationY !== 0) {
-  ax = constrain(rotationY, -45, 45) * sensitivity;
-  ay = constrain(rotationX, -45, 45) * sensitivity;
-} 
-// Otherwise → use mouse
-else {
-  ax = map(mouseX, 0, width, -6, 6) * sensitivity;
-  ay = map(mouseY, 0, height, -6, 6) * sensitivity;
-}
-
-  drawCenterText("tilt your phone/move your mouse")
-
-  // physics motion
+  // physics
   vx += ax;
   vy += ay;
-
-  vx *= 0.8; // friction
+  vx *= 0.9;
   vy *= 0.8;
 
   x += vx;
   y += vy;
 
-  // bounce off walls
   if (x < 25 || x > width - 25) vx *= -0.7;
   if (y < 25 || y > height - 25) vy *= -0.7;
 
   x = constrain(x, 25, width - 25);
   y = constrain(y, 25, height - 25);
 
+  // DRAW ORDER (background → text → object → UI)
+  drawScrollingText();       // ← added
   drawBall(x, y);
+  drawTitleText("");
 }
 
 function drawBackground() {
-  // nice gradient background
   for (let i = 0; i < height; i++) {
-    let c = lerpColor(color(0, 0, 40), color(0, 0, 300), i / height);
+    let c = lerpColor(color(0, 0, 255), color(0, 0, 255), i / height);
     stroke(c);
     line(0, i, width, i);
   }
 }
 
- function drawBall(x, y) {
+function drawBall(x, y) {
   imageMode(CENTER);
   image(img, x, y, 100, 80);
 }
 
-
-
-function drawCenterText(message) {
+function drawTitleText(message) {
   push();
-
-  textAlign(CENTER, CENTER);
-  textSize(20);
+  textAlign(CENTER, TOP);
+  textSize(14);
   textFont("Courier");
   fill(255);
   noStroke();
+  text(message, width/2, height * 0.12);
+  pop();
+}
 
-  fill(500, 500, 100);
-  text(message, width/2, height/2);
+function drawScrollingText() {
+  push();
+
+  textAlign(CENTER, CENTER);
+  textSize(14);
+  textFont("Courier")
+  textLeading(34);
+  fill(255);
+  noStroke();
+
+  let boxWidth = width * 0.7;
+
+  text(storyText, width/6, scrollY, boxWidth);
 
   pop();
+
+  scrollY -= 0.6;
+
+  // loop back to bottom
+  if (scrollY < -600) {
+    scrollY = height;
+  }
 }
