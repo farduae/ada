@@ -73,7 +73,7 @@ else {
 function drawBackground() {
   // nice gradient background
   for (let i = 0; i < height; i++) {
-    let c = lerpColor(color(200, 55, 40), color(0, 0, 300), i / height);
+    let c = lerpColor(color(0, 0, 40), color(0, 0, 300), i / height);
     stroke(c);
     line(0, i, width, i);
   }
@@ -95,7 +95,7 @@ function drawCenterText(message) {
   fill(255);
   noStroke();
 
-  fill(30, 20, 100);
+  fill(500, 500, 100);
   text(message, width/2, height/2);
 
   pop();
