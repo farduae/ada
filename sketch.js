@@ -29,7 +29,7 @@ function setup() {
   if (typeof DeviceOrientationEvent !== "undefined" &&
       typeof DeviceOrientationEvent.requestPermission === "function") {
     createButton("Enable Motion Control")
-      .position(20, 20)
+      .position(30, 20)
       .mousePressed(requestAccess);
   }
 }
@@ -84,7 +84,7 @@ function drawBackground() {
 
 function drawBall(x, y) {
   imageMode(CENTER);
-  image(img, x, y, 100, 80);
+  image(img, x, y, 200, 160);
 }
 
 function drawTitleText(message) {
