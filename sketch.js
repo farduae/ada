@@ -101,9 +101,9 @@ function drawTitleText(message) {
 function drawScrollingText() {
   push();
 
-  textAlign(CENTER, CENTER);
-  textSize(14);
-  textFont("Courier")
+  textAlign(CENTER, TOP);
+  textSize(min(width, height) * 0.045);
+  textFont("Courier");
   textLeading(34);
   fill(255);
   noStroke();
@@ -114,10 +114,16 @@ function drawScrollingText() {
 
   pop();
 
+  // move upward
   scrollY -= 0.6;
 
-  // loop back to bottom
-  if (scrollY < -600) {
-    scrollY = height;
+  // reset when it goes off the top
+  // estimate text height using number of lines
+  let lines = storyText.split("\n").length;
+  let textHeight = lines * 34; // match textLeading
+
+  if (scrollY < -textHeight) {
+    scrollY = height; // start again from bottom
   }
 }
+
